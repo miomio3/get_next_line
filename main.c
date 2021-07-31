@@ -19,3 +19,4 @@ int	main(void)
 	close(fd);
 	return (0);
 }
+
