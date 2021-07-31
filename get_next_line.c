@@ -2,29 +2,34 @@
 
 char	*get_next_line(int fd)
 {
-	char	buf[30];
-	char	*p;
-	char	*line;
-	size_t	i;
-	size_t	bufsize;
+	static char	*buf;
+	char		*p;
+	char		*line;
+	size_t		i;
 
-	line = ft_strdup("");
-	bufsize = BUFFER_SIZE / 30 + 1;
-	while (bufsize-- && read(fd, buf, 30) > 0)
+	if (buf == NULL)
+		buf = (char *)malloc(sizeof(char) * 100);
+	line = "";
+	while (read(fd, buf, 100) >= 0)
 	{
-		i = 0;
-		while (ft_strchr("\n", buf[i]) == NULL && i <= 30)
+		p = ft_strchr(buf, '\n');
+		i = 1;
+		while (&buf[i] != p && p != NULL)
 			i++;
-		p = ft_substr(buf, 0, i);
 		if (p == NULL)
+			i = ft_strlen(buf) + 1;
+		line = ft_strjoin(line, ft_substr(buf, 0, i - 1));
+		if (p != NULL)
 		{
-			free(line);
-			return (NULL);
-		}
-		line = ft_strjoin(line, p);
-		free(p);
-		if (ft_strchr("\n", buf[i]) != NULL)
+			buf = ft_strdup(p + 1);
 			break ;
+		}
+		else
+		{
+			buf = NULL;
+			break ;
+		}
 	}
+	free(buf);
 	return (line);
 }
