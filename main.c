@@ -8,6 +8,7 @@
 int	main(void)
 {
 	int		fd;
+	char	buf[100];
 
 	fd = open("test.txt", O_RDONLY);
 	if (fd == -1)
