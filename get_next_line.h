@@ -13,7 +13,8 @@ char	*ft_strdup(const char *src);
 size_t	ft_strlen(const char *str);
 char	*ft_strchr(const char *s, int c);
 void	*ft_calloc(size_t n, size_t size);
-void	ft_bzero(void *s, size_t n);
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
+void	*ft_memset(void *buf, int ch, size_t n);
+int		create_line(char **line, char *buf);
 
 #endif
