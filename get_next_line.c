@@ -1,56 +1,65 @@
 #include "get_next_line.h"
 
-static int	create_line(char **line, char buf[])
+static int	create_line(char **line, char *buf)
 {
 	char	*p;
 	size_t	i;
 	char	*tmp;
+	char	*tmp2;
+	int		f;
 
 	p = ft_strchr(buf, '\n');
-	i = 0;
 	if (p != NULL)
 	{
-		i = ft_strlen(buf) - ft_strlen(p);
-		tmp = ft_substr(buf, 0, i);
-		*line = ft_strjoin(*line, tmp);
+		tmp = ft_substr(buf, 0, ft_strlen(p) - 1);
+		tmp2 = ft_strjoin(*line, tmp);
+		free (tmp);
+		tmp = ft_substr(p + 1, 0, ft_strlen(p + 1));
+		ft_strlcpy(buf, tmp, ft_strlen(tmp));
 		free(tmp);
-		ft_strlcpy(buf, p + 1, ft_strlen(p + 1) + 1);
+		f = 0;
 	}
 	else
 	{
-		i = ft_strlen(buf);
-		tmp = ft_substr(buf, 0, i);
-		*line = ft_strjoin(*line, tmp);
+		tmp = ft_substr(buf, 0, ft_strlen(buf));
+		tmp2 = ft_strjoin(*line, tmp);
+		ft_bzero(buf, 3 + 1);
 		free(tmp);
-		ft_bzero(buf, 3);
-		return (1);
+		f = 1;
 	}
-	return (0);
+	free(*line);
+	*line = tmp2;
+	return (f);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	buf[BUFFER_SIZE];
+	static char	*buf;
 	char		*line;
 	int			f;
+	size_t		i;
 
-	line = "";
-	f = 2;
-	if (buf[0] == '\0')
-	{
-		if (read(fd, buf, BUFFER_SIZE) <= 0)
-			line = NULL;
-		else
-			f = create_line(&line, buf);
-	}
+	f = 1;
+	line = ft_strdup("");
+	if (buf == NULL)
+		buf = (char *)ft_calloc(4, sizeof(char));
+	i = 0;
 	while (f)
 	{
+		if (buf[0] != '\0' && i != 0)
+			f = create_line(&line, buf);
 		if (f == 1)
 		{
-			if (read(fd, buf, BUFFER_SIZE) <= 0)
-				break ;
+			if (read(fd, buf, 3) <= 0)
+			{
+				if (i == 0)
+					return (NULL);
+				else
+					break ;
+			}
 		}
-		f = create_line(&line, buf);
+		i++;
 	}
+	free(buf);
 	return (line);
 }
