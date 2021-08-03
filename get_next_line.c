@@ -67,7 +67,7 @@ int	create_line(char **line, char *buf)
 	else
 	{
 		tmp2 = ft_strjoin(*line, buf);
-		ft_memset(buf, 0, 1);
+		ft_memset(buf, 0, BUFFER_SIZE);
 		f = 1;
 	}
 	free(*line);
@@ -83,13 +83,15 @@ char	*get_next_line(int fd)
 
 	f = 2;
 	line = ft_substr("", 0, 0);
+	if (BUFFER_SIZE == 0)
+		return (NULL);
 	if (buf == NULL)
-		buf = (char *)ft_calloc(1 + 1, sizeof(char));
+		buf = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	while (f)
 	{
 		if (buf[0] == '\0')
 		{
-			if (read(fd, buf, 1) <= 0)
+			if (read(fd, buf, BUFFER_SIZE) <= 0)
 			{
 				if (f == 2)
 				{

@@ -38,27 +38,6 @@ char	*ft_strchr(const char *s, int c)
 	return ((char *)s + i);
 }
 
-char	*ft_strdup(const char *src)
-{
-	char	*dest;
-	size_t	i;
-
-	i = 0;
-	while (src[i])
-		i++;
-	dest = (char *)malloc(sizeof(char) * (i + 1));
-	i = 0;
-	if (dest == NULL)
-		return (NULL);
-	while (src[i])
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*p;
@@ -69,19 +48,19 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	if (s == NULL)
 		return (NULL);
 	s_len = ft_strlen(s);
-	if (*s == '\0' || start >= s_len)
-		return (ft_strdup(""));
+	if (start > s_len)
+		return (ft_substr("", 0, 0));
 	if (len < s_len - start)
 		s_len = len;
 	p = (char *)malloc(sizeof(char) * (s_len + 1));
 	if (p == NULL)
 		return (NULL);
 	i = 0;
-	while (i < len && *(s + start + i))
+	while (i < len && s [start + i])
 	{
-		*(p + i) = *(s + start + i);
+		p[i] = s[start + i];
 		i++;
 	}
-	*(p + i) = '\0';
+	p[i] = '\0';
 	return (p);
 }
