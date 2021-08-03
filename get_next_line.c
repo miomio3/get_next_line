@@ -44,6 +44,12 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	return (ft_strlen(src));
 }
 
+char	*free_NULL(char *line)
+{
+	free(line);
+	return (NULL);
+}
+
 int	create_line(char **line, char *buf)
 {
 	char	*p;
@@ -85,32 +91,29 @@ char	*get_next_line(int fd)
 
 	f = 2;
 	line = ft_substr("", 0, 0);
-	if (buf == NULL)
-		buf = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-	if (line == NULL || buf == NULL)
+	if (line == NULL)
 		return (NULL);
+	if (buf == NULL)
+		buf = (char *)ft_calloc(3 + 1, sizeof(char));
+	if (buf == NULL)
+		return (free_NULL(line));
 	while (f)
 	{
 		if (buf[0] == '\0')
 		{
-			if (read(fd, buf, BUFFER_SIZE) <= 0)
+			if (read(fd, buf, 3) <= 0)
 			{
 				if (f == 2)
 				{
-					free(buf);
-					buf = NULL;
-					free(line);
-					return (NULL);
+					buf = free_NULL(buf);
+					return (free_NULL(line));
 				}
 				break ;
 			}
 		}
 		f = create_line(&line, buf);
 		if (f == 3)
-		{
-			free(line);
-			return (NULL);
-		}
+			return (free_NULL(line));
 	}
 	return (line);
 }
