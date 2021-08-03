@@ -44,9 +44,8 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	j = 0;
 	while (j++ < size && *s)
 		*d++ = *s++;
-	if (size != 0)
-		*d = '\0';
-	return (ft_strlen(s));
+	*d = '\0';
+	return (ft_strlen(src));
 }
 
 int	create_line(char **line, char *buf)
@@ -59,20 +58,18 @@ int	create_line(char **line, char *buf)
 	p = ft_strchr(buf, '\n');
 	if (p != NULL)
 	{
-		tmp = ft_substr(buf, 0, ft_strlen(p) - 1);
+		tmp = ft_substr(buf, 0, ft_strlen(buf) - ft_strlen(p));
 		tmp2 = ft_strjoin(*line, tmp);
 		free (tmp);
-		tmp = ft_substr(p + 1, 0, ft_strlen(p + 1));
-		ft_strlcpy(buf, tmp, ft_strlen(tmp));
+		ft_strlcpy(buf, p + 1, ft_strlen(p + 1));
 		f = 0;
 	}
 	else
 	{
 		tmp2 = ft_strjoin(*line, buf);
-		ft_memset(buf, 0, BUFFER_SIZE + 1);
+		ft_memset(buf, 0, 1);
 		f = 1;
 	}
-	free(tmp);
 	free(*line);
 	*line = tmp2;
 	return (f);
@@ -83,26 +80,26 @@ char	*get_next_line(int fd)
 	static char	*buf;
 	char		*line;
 	int			f;
-	size_t		i;
 
-	f = 1;
-	line = ft_strdup("");
+	f = 2;
+	line = ft_substr("", 0, 0);
 	if (buf == NULL)
-		buf = (char *)ft_calloc(BUFFER_SIZE, sizeof(char));
-	i = 0;
+		buf = (char *)ft_calloc(1 + 1, sizeof(char));
 	while (f)
 	{
-		if (buf[0] != '\0')
-			f = create_line(&line, buf);
-		if (f == 1)
+		if (buf[0] == '\0')
 		{
-			if (read(fd, buf, BUFFER_SIZE) <= 0)
+			if (read(fd, buf, 1) <= 0)
 			{
-				if (i++ == 0)
+				if (f == 2)
+				{
+					free(line);
 					return (NULL);
+				}
 				break ;
 			}
 		}
+		f = create_line(&line, buf);
 	}
 	return (line);
 }
