@@ -64,3 +64,14 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	p[i] = '\0';
 	return (p);
 }
+
+void	*ft_calloc(size_t n, size_t size)
+{
+	void	*p;
+
+	p = (void *)malloc(size * n);
+	if (p == NULL)
+		return (NULL);
+	ft_memset(p, 0, size * n);
+	return (p);
+}

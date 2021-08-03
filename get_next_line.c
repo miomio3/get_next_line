@@ -5,6 +5,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*p;
 	size_t	i;
 
+	i = 0;
 	if (s1 == NULL || s2 == NULL)
 		return (NULL);
 	i = ft_strlen(s1) + ft_strlen(s2);
@@ -13,21 +14,16 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (NULL);
 	i = 0;
 	while (*s1)
-		p[i++] = *s1++;
+	{
+		p[i] = *s1++;
+		i++;
+	}
 	while (*s2)
-		p[i++] = *s2++;
+	{
+		p[i] = *s2++;
+		i++;
+	}
 	p[i] = '\0';
-	return (p);
-}
-
-void	*ft_calloc(size_t n, size_t size)
-{
-	void	*p;
-
-	p = (void *)malloc(size * n);
-	if (p == NULL)
-		return (NULL);
-	ft_memset(p, 0, size * n);
 	return (p);
 }
 
@@ -101,6 +97,8 @@ char	*get_next_line(int fd)
 			{
 				if (f == 2)
 				{
+					free(buf);
+					buf = NULL;
 					free(line);
 					return (NULL);
 				}
