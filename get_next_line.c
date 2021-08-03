@@ -59,14 +59,20 @@ int	create_line(char **line, char *buf)
 	if (p != NULL)
 	{
 		tmp = ft_substr(buf, 0, ft_strlen(buf) - ft_strlen(p));
+		if (tmp == NULL)
+			return (3);
 		tmp2 = ft_strjoin(*line, tmp);
-		free (tmp);
+		free(tmp);
+		if (tmp2 == NULL)
+			return (3);
 		ft_strlcpy(buf, p + 1, ft_strlen(p + 1));
 		f = 0;
 	}
 	else
 	{
 		tmp2 = ft_strjoin(*line, buf);
+		if (tmp2 == NULL)
+			return (3);
 		ft_memset(buf, 0, BUFFER_SIZE);
 		f = 1;
 	}
@@ -83,10 +89,10 @@ char	*get_next_line(int fd)
 
 	f = 2;
 	line = ft_substr("", 0, 0);
-	if (BUFFER_SIZE == 0)
-		return (NULL);
 	if (buf == NULL)
 		buf = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (line == NULL || buf == NULL)
+		return (NULL);
 	while (f)
 	{
 		if (buf[0] == '\0')
@@ -102,6 +108,11 @@ char	*get_next_line(int fd)
 			}
 		}
 		f = create_line(&line, buf);
+		if (f == 3)
+		{
+			free(line);
+			return (NULL);
+		}
 	}
 	return (line);
 }
