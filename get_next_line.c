@@ -58,7 +58,7 @@ int	create_line(char **line, char *buf)
 	p = ft_strchr(buf, '\n');
 	if (p != NULL)
 	{
-		tmp = ft_substr(buf, 0, ft_strlen(buf) - ft_strlen(p));
+		tmp = ft_substr(buf, 0, ft_strlen(buf) - ft_strlen(p) + 1);
 		if (tmp == NULL)
 			return (3);
 		tmp2 = ft_strjoin(*line, tmp);
