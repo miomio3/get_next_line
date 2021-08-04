@@ -1,119 +1,87 @@
 #include "get_next_line.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+t_list	*front_list(t_list **list)
 {
-	char	*p;
-	size_t	i;
+	t_list	*tmp;
 
-	i = 0;
-	if (s1 == NULL || s2 == NULL)
-		return (NULL);
-	i = ft_strlen(s1) + ft_strlen(s2);
-	p = (char *)malloc(sizeof(char) * (i + 1));
-	if (p == NULL)
-		return (NULL);
-	i = 0;
-	while (*s1)
-	{
-		p[i] = *s1++;
-		i++;
-	}
-	while (*s2)
-	{
-		p[i] = *s2++;
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
+	tmp = *list;
+	while (tmp->next)
+		tmp = tmp->next;
+	return (tmp);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+int	free_list(t_list **list)
 {
-	size_t			j;
-	unsigned char	*d;
-	unsigned char	*s;
+	t_list	*tmp;
+	t_list	*t;
 
-	d = (unsigned char *)dst;
-	s = (unsigned char *)src;
-	if (dst == NULL || src == NULL)
-		return (0);
-	j = 0;
-	while (j++ < size && *s)
-		*d++ = *s++;
-	*d = '\0';
-	return (ft_strlen(src));
+	while (t)
+	{
+		tmp = t;
+		tmp = tmp->next;
+		free(t->buf);
+		free(t);
+		t = tmp;
+	}
+	return (-1);
 }
 
-char	*free_NULL(char *line)
+char	*create_list(t_list **list, int fd)
 {
-	free(line);
-	return (NULL);
+	t_list	*tmp;
+
+	tmp = front_list(list);
+	tmp->buf = (char *)malloc(3 + 1);
+	if (tmp->buf == NULL)
+		return (free_list(&list));//-1=error,NULLをreturn
+	if (read(fd, tmp->buf, 3) <= 0)
+		return (free_list(&list));//上に同じ
+	tmp->fd = fd;
+	printf("%d\n", tmp->fd);//
+	printf("%s\n", tmp->buf);//
+	if (ft_strchr(tmp->buf, '\n') == NULL)
+		return (1);//1=list->をstrjoinしていく
+	return (0);
 }
 
-int	create_line(char **line, char *buf)
+t_list	*list_new(const t_list **list)
 {
-	char	*p;
-	char	*tmp;
-	char	*tmp2;
-	int		f;
+	t_list	*tmp;
 
-	p = ft_strchr(buf, '\n');
-	if (p != NULL)
-	{
-		tmp = ft_substr(buf, 0, ft_strlen(buf) - ft_strlen(p) + 1);
-		if (tmp == NULL)
-			return (3);
-		tmp2 = ft_strjoin(*line, tmp);
-		free(tmp);
-		if (tmp2 == NULL)
-			return (3);
-		ft_strlcpy(buf, p + 1, ft_strlen(p + 1));
-		f = 0;
-	}
-	else
-	{
-		tmp2 = ft_strjoin(*line, buf);
-		if (tmp2 == NULL)
-			return (3);
-		ft_memset(buf, 0, BUFFER_SIZE);
-		f = 1;
-	}
-	free(*line);
-	*line = tmp2;
-	return (f);
+	tmp = front_list(list);
+	tmp = tmp->next;
+	tmp = (t_list *)malloc(sizeof(t_list));
+	return (list);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buf;
-	char		*line;
-	int			f;
+	static t_list	*list;
+	t_list			*new_list;
+	char			*line;
+	int				f;
 
-	f = 2;
-	line = ft_substr("", 0, 0);
-	if (line == NULL)
-		return (NULL);
-	if (buf == NULL)
-		buf = (char *)ft_calloc(3 + 1, sizeof(char));
-	if (buf == NULL)
-		return (free_NULL(line));
+	f = 1;
 	while (f)
 	{
-		if (buf[0] == '\0')
-		{
-			if (read(fd, buf, 3) <= 0)
-			{
-				if (f == 2)
-				{
-					buf = free_NULL(buf);
-					return (free_NULL(line));
-				}
-				break ;
-			}
-		}
-		f = create_line(&line, buf);
-		if (f == 3)
-			return (free_NULL(line));
+		f = create_list(&list, fd);
+		if (f == -1)
+			return (NULL);
+		else if (f == 0)
+			return (listbuf_join(&list));
 	}
-	return (line);
+}
+
+int	main(void)
+{
+	int		fd;
+	char	buf[100];
+
+	fd = open("test.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		printf("fail\n");
+		return (-1);
+	}
+	printf("%s", get_next_line(fd));
 }
