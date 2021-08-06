@@ -2,43 +2,32 @@
 
 char	*listbuf_join(t_list **list)
 {
-	t_list	*t;
-	t_list	*tmp_list;
+	char	*p;
 	char	*line;
 	char	*tmp;
+	char	*tmp2;
+	t_list	*t;
 
-	t = *list;
-	line = ft_substr("", NULL);
-	if (line == NULL)
-		return (NULL);
-	while (t)
+	while (*list)
 	{
-		if (t->next == NULL)
-			t->buf = ft_substr(t->buf, ft_strchr(t->buf, '\n'));
-		tmp = ft_strjoin(line, t->buf);
-		free(line);
+		p = strchr((*list)->buf, '\n');
+		if (p == NULL)
+			tmp = strjoin(line, (*list)->buf);
+		else
+		{
+			tmp2 = substr((*list)->buf, p);
+			 	if (tmp2 == NULL)
+				 	return (NULL);
+			tmp = strjoin(line, tmp2);
+		}
 		if (tmp == NULL)
 			return (NULL);
+		free(line);
 		line = tmp;
-		tmp_list = t->next;
-		free(t->buf);
-		free(t);
-		t = tmp_list;
+		t = (*list)->next;
+		free(*list);
+		*list = t;
 	}
-	return (line);
-}
-
-t_list	*front_list(t_list **list)
-{
-	t_list	*tmp;
-
-	tmp = *list;
-	while (tmp)
-		tmp = tmp->next;
-	tmp = (t_list *)malloc(sizeof(t_list));
-	if (tmp == NULL)
-		free_list(list);
-	return (*list);
 }
 
 int	free_list(t_list **list)
@@ -58,19 +47,18 @@ int	free_list(t_list **list)
 
 int	create_list(t_list **list, int fd)
 {
-	t_list	*tmp;
-
-	while (tmp)
-		tmp = tmp->next;
-	if (tmp == NULL)
+	while (*list)
+		*list = (*list)->next;
+	*list = malloc(sizeof(t_list));
+	if (*list == NULL)
 		return (-1);
-	tmp->buf = (char *)ft_calloc(3 + 1, sizeof(char));
-	if (tmp->buf == NULL)
-		return (free_list(list));
-	if (read(fd, tmp->buf, 3) <= 0)
-		return (0);
-	tmp->fd = fd;
-	if (ft_strchr(tmp->buf, '\n') == NULL)
+	(*list)->buf = ft_calloc(3 + 1, sizeof(char));
+	if ((*list)->buf == NULL)
+		return (-1);
+	(*list)->fd = fd;
+	if (read(fd, (*list)->buf, 3) <= 0)
+		reuturn (0);
+	if (strchr((*list)->buf, '\n') == NULL)
 		return (1);
 	else
 		return (0);
@@ -79,17 +67,15 @@ int	create_list(t_list **list, int fd)
 char	*get_next_line(int fd)
 {
 	static t_list	*list;
-	t_list			*tmp;
 	int				f;
 
 	f = 1;
 	while (f)
 	{
-		tmp = front_list(&list);
-		free(list);
-		list = tmp;
 		f = create_list(&list, fd);
-		if (f == -1)
+		if (f == 0)
+			break ;
+		else if (f == -1)
 			return (NULL);
 	}
 	return (listbuf_join(&list));
