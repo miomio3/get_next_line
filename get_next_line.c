@@ -1,5 +1,19 @@
 #include "get_next_line.h"
 
+void	join_free(t_list **list, char **line, char *tmp2)
+{
+	t_list	*t;
+	char	*tmp;
+
+	tmp = ft_strjoin(*line, tmp2);
+	free(tmp2);
+	free(*line);
+	*line = tmp;
+	t = (*list)->next;
+	free(*list);
+	*list = t;
+}
+
 char	*listbuf_join(t_list **list)
 {
 	char	*p;
@@ -8,60 +22,57 @@ char	*listbuf_join(t_list **list)
 	char	*tmp2;
 	t_list	*t;
 
-	while (*list)
+	line = ft_strjoin("", "");
+	while ((*list)->next)
 	{
-		p = strchr((*list)->buf, '\n');
+		p = ft_strchr((*list)->buf, '\n');
 		if (p == NULL)
-			tmp = strjoin(line, (*list)->buf);
+			join_free(list, &line, (*list)->buf);
 		else
 		{
-			tmp2 = substr((*list)->buf, p);
+			tmp2 = ft_substr((*list)->buf, p);
 			 	if (tmp2 == NULL)
 				 	return (NULL);
-			tmp = strjoin(line, tmp2);
+			join_free(list, &line, tmp2);
 		}
-		if (tmp == NULL)
-			return (NULL);
-		free(line);
-		line = tmp;
-		t = (*list)->next;
-		free(*list);
-		*list = t;
 	}
+	free(*list);
+	return (line);
 }
 
 int	free_list(t_list **list)
 {
 	t_list	*tmp;
-	t_list	*t;
 
-	while (t)
+	while (*list)
 	{
-		tmp = t->next;
-		free(t->buf);
-		free(t);
-		t = tmp;
+		free((*list)->buf);
+		tmp = (*list)->next;
+		free(*list);
+		*list = tmp;
 	}
 	return (-1);
 }
 
 int	create_list(t_list **list, int fd)
 {
-	while (*list)
-		*list = (*list)->next;
-	*list = malloc(sizeof(t_list));
-	if (*list == NULL)
-		return (-1);
-	(*list)->buf = ft_calloc(3 + 1, sizeof(char));
-	if ((*list)->buf == NULL)
-		return (-1);
-	(*list)->fd = fd;
-	if (read(fd, (*list)->buf, 3) <= 0)
-		reuturn (0);
-	if (strchr((*list)->buf, '\n') == NULL)
-		return (1);
-	else
+	t_list	*tmp;
+
+	tmp = *list;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = malloc(sizeof(t_list));
+	if (tmp->next == NULL)
+		return (free_list(list));
+	tmp->buf = ft_calloc(10 + 1, sizeof(char));
+	if (tmp->buf == NULL)
+		return (free_list(list));
+	tmp->fd = fd;
+	if (read(fd, tmp->buf, 10) <= 0)
 		return (0);
+	if (ft_strchr(tmp->buf, '\n') == NULL)
+		return (1);
+	return (0);
 }
 
 char	*get_next_line(int fd)
@@ -70,12 +81,13 @@ char	*get_next_line(int fd)
 	int				f;
 
 	f = 1;
+	list = malloc(sizeof(t_list));
+	if (list == NULL)
+		return (NULL);
 	while (f)
 	{
 		f = create_list(&list, fd);
-		if (f == 0)
-			break ;
-		else if (f == -1)
+		if (f == -1)
 			return (NULL);
 	}
 	return (listbuf_join(&list));
