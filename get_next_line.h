@@ -10,9 +10,9 @@
 # include <fcntl.h>
 # include <stdio.h>
 
-typedef struct l_list
+typedef struct s_list
 {
-	struct l_list	*next;
+	struct s_list	*next;
 	int				fd;
 	char			*buf;
 }t_list;
@@ -25,7 +25,7 @@ void		*ft_calloc(size_t n, size_t size);
 char		*listbuf_join(t_list **list);
 t_list		*front_list(t_list **list);
 int			free_list(t_list **list);
-int			create_list(t_list **list, int fd);
+int			create_list(t_list **tmp, int fd);
 char		*ft_substr(char const *s, char *p);
 
 #endif
