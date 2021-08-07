@@ -24,8 +24,8 @@ char		*ft_strchr(const char *s, int c);
 void		*ft_calloc(size_t n, size_t size);
 char		*listbuf_join(t_list **list);
 t_list		*front_list(t_list **list);
-int			free_list(t_list **list);
+char		*free_list(t_list **list);
 int			create_list(t_list **tmp, int fd);
-char		*ft_substr(char const *s, char *p);
+char		*ft_substr(char const *s, const char *s1);
 
 #endif

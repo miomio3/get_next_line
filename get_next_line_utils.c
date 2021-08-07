@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-char	*ft_substr(char const *s, char *s1)
+char	*ft_substr(char const *s, const char *s1)
 {
 	char	*p;
 	size_t	i;
@@ -11,7 +11,7 @@ char	*ft_substr(char const *s, char *s1)
 	s_len = ft_strlen(s);
 	if (*s == '\0')
 		return (ft_substr("", NULL));
-	if (p != NULL)
+	if (s1 != NULL)
 		s_len = s_len - ft_strlen(s1) + 1;
 	p = (char *)malloc(sizeof(char) * (s_len + 1));
 	if (p == NULL)
@@ -32,8 +32,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	i;
 
 	i = 0;
-	if (s1 == NULL || s2 == NULL)
-		return (NULL);
 	i = ft_strlen(s1) + ft_strlen(s2);
 	p = (char *)malloc(sizeof(char) * (i + 1));
 	if (p == NULL)
