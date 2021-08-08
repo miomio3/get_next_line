@@ -13,7 +13,6 @@ void	join_free(t_list **list, char **line, char **tmp2, char *p)
 	{
 		t = (*list)->next;
 		free(*list);
-		list = NULL;
 		*list = t;
 	}
 	else
@@ -53,14 +52,16 @@ char	*listbuf_join(t_list **list)
 
 char	*free_list(t_list **list)
 {
-	t_list	*tmp;
+	t_list	**tmp;
+	t_list	*t;
 
 	while (*list)
 	{
-		tmp = (*list)->next;
+		tmp = &((*list)->next);
 		free((*list)->buf);
-		free(*list);
-		*list = tmp;
+		t = *list;
+		free(t);
+		list = tmp;
 	}
 	return (NULL);
 }
@@ -93,7 +94,7 @@ char	*get_next_line(int fd)
 			if (ft_strchr((*tmp)->buf, '\n') != NULL)
 				break ;
 		while (*tmp)
-			*tmp = (*tmp)->next;
+			tmp = &((*tmp)->next);
 		*tmp = malloc(sizeof(t_list));
 		if (*tmp == NULL)
 			return (free_list(&list));
