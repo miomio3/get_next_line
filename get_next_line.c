@@ -4,20 +4,23 @@ void	join_free(t_list **list, char **line, char **tmp2, char *p)
 {
 	t_list	*t;
 	char	*tmp;
+	char	*tmp1;
 
 	tmp = ft_strjoin(*line, *tmp2);
+	free(*line);
 	*line = tmp;
 	if (p == NULL)
 	{
 		t = (*list)->next;
-		free((*list)->buf);
 		free(*list);
+		list = NULL;
 		*list = t;
 	}
 	else
 	{
+		tmp1 = ft_strjoin(p + 1, "");
 		free((*list)->buf);
-		(*list)->buf = ft_strjoin(p + 1, "");
+		(*list)->buf = tmp1;
 	}
 }
 
@@ -55,6 +58,7 @@ char	*free_list(t_list **list)
 	while (*list)
 	{
 		tmp = (*list)->next;
+		free((*list)->buf);
 		free(*list);
 		*list = tmp;
 	}
@@ -68,7 +72,7 @@ int	create_list(t_list **tmp, int fd)
 		return (-1);
 	(*tmp)->fd = fd;
 	if (read(fd, (*tmp)->buf, 10) <= 0)
-		return (0);
+		return (2);
 	if (ft_strchr((*tmp)->buf, '\n') == NULL)
 		return (1);
 	return (0);
@@ -83,7 +87,7 @@ char	*get_next_line(int fd)
 
 	f = 1;
 	tmp = &list;
-	while (f)
+	while (f && f != 2)
 	{
 		if (*tmp != NULL)
 			if (ft_strchr((*tmp)->buf, '\n') != NULL)
