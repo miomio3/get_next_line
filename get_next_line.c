@@ -12,6 +12,7 @@ void	join_free(t_list **list, char **line, char **tmp2, char *p)
 	if (p == NULL)
 	{
 		t = (*list)->next;
+		free((*list)->buf);
 		free(*list);
 		*list = t;
 	}
@@ -27,9 +28,7 @@ char	*listbuf_join(t_list **list)
 {
 	char	*p;
 	char	*line;
-	char	*tmp;
 	char	*tmp2;
-	t_list	*t;
 
 	line = ft_strjoin("", "");
 	while (*list)
@@ -68,11 +67,11 @@ char	*free_list(t_list **list)
 
 int	create_list(t_list **tmp, int fd)
 {
-	(*tmp)->buf = ft_calloc(10 + 1, sizeof(char));
+	(*tmp)->buf = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if ((*tmp)->buf == NULL)
 		return (-1);
 	(*tmp)->fd = fd;
-	if (read(fd, (*tmp)->buf, 10) <= 0)
+	if (read(fd, (*tmp)->buf, BUFFER_SIZE ) <= 0)
 		return (2);
 	if (ft_strchr((*tmp)->buf, '\n') == NULL)
 		return (1);
@@ -98,10 +97,16 @@ char	*get_next_line(int fd)
 		*tmp = malloc(sizeof(t_list));
 		if (*tmp == NULL)
 			return (free_list(&list));
+		(*tmp)->next = NULL;
 		f = create_list(tmp, fd);
 		if (f == -1)
 			return (free_list(&list));
 	}
 	line = listbuf_join(&list);
+	if (f == 2 && *line == '\0')
+	{
+		free(line);
+		return (NULL);
+	}
 	return (line);
 }

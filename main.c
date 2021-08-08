@@ -14,6 +14,19 @@ int	main(void)
 	line = get_next_line(fd);
 	printf("%s", line);
 	free(line);
+	line = get_next_line(fd);
+	printf("%s", line);
+	free(line);
+	line = get_next_line(fd);
+	printf("%s", line);
+	free(line);
+	line = get_next_line(fd);
+	printf("%s", line);
+	free(line);
+	line = get_next_line(fd);
+	printf("%s", line);
+	line = get_next_line(fd);
+	printf("%s", line);
 	close(fd);
 	return (0);
 }
