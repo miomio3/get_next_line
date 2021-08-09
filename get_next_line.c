@@ -33,7 +33,10 @@ char	*listbuf_join(t_list **list)
 	line = ft_strjoin("", "");
 	while (*list)
 	{
-		p = ft_strchr((*list)->buf, '\n');
+		if ((*list)->next == NULL)
+			p = ft_strchr((*list)->buf, '\n');
+		else
+			p = NULL;
 		if (p == NULL)
 			join_free(list, &line, &(*list)->buf, p);
 		else
@@ -103,7 +106,7 @@ char	*get_next_line(int fd)
 			return (free_list(&list));
 	}
 	line = listbuf_join(&list);
-	if (f == 2 && *line == '\0')
+	if (f == 2 && line == "abc")
 	{
 		free(line);
 		return (NULL);
