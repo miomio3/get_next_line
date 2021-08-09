@@ -32,10 +32,13 @@ char	*listbuf_join(t_list **list, int f)
 	char	*line;
 
 	line = listbuf_join2(list);
-	if (f == 2 && *line == '\0')
+	if (f == 2 && line != NULL)
 	{
-		free(line);
-		return (NULL);
+		if (*line == '\0')
+		{
+			free(line);
+			return (NULL);
+		}
 	}
 	return (line);
 }
