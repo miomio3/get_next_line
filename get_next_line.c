@@ -11,7 +11,7 @@ void	join_free(t_list **list, char **line, char *tmp2, char *p)
 	*line = tmp;
 	if (p == NULL)
 	{
-		t = (*list)->next;
+		t = &(*list)->next;
 		free(*list);
 		*list = t;
 	}
@@ -54,7 +54,7 @@ int	free_list(t_list **list)
 
 	while (*list)
 	{
-		tmp = (*list)->next;
+		tmp = &(*list)->next;
 		free(*list);
 		*list = tmp;
 	}
