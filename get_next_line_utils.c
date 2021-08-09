@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-char	*ft_substr(char const *s, char *s1)
+char	*ft_substr(char const *s, const char *s1)
 {
 	char	*p;
 	size_t	i;
@@ -11,7 +11,7 @@ char	*ft_substr(char const *s, char *s1)
 	s_len = ft_strlen(s);
 	if (*s == '\0')
 		return (ft_substr("", NULL));
-	if (p != NULL)
+	if (s1 != NULL)
 		s_len = s_len - ft_strlen(s1) + 1;
 	p = (char *)malloc(sizeof(char) * (s_len + 1));
 	if (p == NULL)
@@ -32,8 +32,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	i;
 
 	i = 0;
-	if (s1 == NULL || s2 == NULL)
-		return (NULL);
 	i = ft_strlen(s1) + ft_strlen(s2);
 	p = (char *)malloc(sizeof(char) * (i + 1));
 	if (p == NULL)
@@ -79,21 +77,26 @@ char	*ft_strchr(const char *s, int c)
 	return ((char *)s + i);
 }
 
-void	*ft_calloc(size_t n, size_t size)
+void	join_free(t_list **list, char **line, char **tmp2, char *p)
 {
-	void			*p;
-	size_t			i;
-	unsigned char	*buf;
+	t_list	*t;
+	char	*tmp;
+	char	*tmp1;
 
-	p = (void *)malloc(size * n);
+	tmp = ft_strjoin(*line, *tmp2);
+	free(*line);
+	*line = tmp;
 	if (p == NULL)
-		return (NULL);
-	i = 0;
-	buf = (unsigned char *)p;
-	while (i < n * size)
 	{
-		buf[i] = 0;
-		i++;
+		t = (*list)->next;
+		free((*list)->buf);
+		free(*list);
+		*list = t;
 	}
-	return (p);
+	else
+	{
+		tmp1 = ft_strjoin(p + 1, "");
+		free((*list)->buf);
+		(*list)->buf = tmp1;
+	}
 }
