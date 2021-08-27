@@ -1,42 +1,17 @@
 #include "get_next_line.h"
 
-void	join_free(t_list **list, char **line, char **tmp2, char *p)
+char	*listbuf_join2(t_list **list)
 {
-	t_list	*t;
-	char	*tmp;
-	char	*tmp1;
-
-	tmp = ft_strjoin(*line, *tmp2);
-	free(*line);
-	*line = tmp;
-	if (p == NULL)
-	{
-		t = (*list)->next;
-		free((*list)->buf);
-		free(*list);
-		*list = t;
-	}
-	else
-	{
-		tmp1 = ft_strjoin(p + 1, "");
-		free((*list)->buf);
-		(*list)->buf = tmp1;
-	}
-}
-
-char	*listbuf_join(t_list **list)
-{
-	char	*p;
 	char	*line;
 	char	*tmp2;
+	char	*p;
 
 	line = ft_strjoin("", "");
 	while (*list)
 	{
+		p = NULL;
 		if ((*list)->next == NULL)
 			p = ft_strchr((*list)->buf, '\n');
-		else
-			p = NULL;
 		if (p == NULL)
 			join_free(list, &line, &(*list)->buf, p);
 		else
@@ -47,6 +22,22 @@ char	*listbuf_join(t_list **list)
 			join_free(list, &line, &tmp2, p);
 			free(tmp2);
 			break ;
+		}
+	}
+	return (line);
+}
+
+char	*listbuf_join(t_list **list, int f)
+{
+	char	*line;
+
+	line = listbuf_join2(list);
+	if (f == 2 && line != NULL)
+	{
+		if (*line == '\0')
+		{
+			free(line);
+			return (NULL);
 		}
 	}
 	return (line);
@@ -70,11 +61,21 @@ char	*free_list(t_list **list)
 
 int	create_list(t_list **tmp, int fd)
 {
-	(*tmp)->buf = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	unsigned char	*p;
+	size_t			i;
+
+	(*tmp)->buf = malloc((10 + 1) * sizeof(char));
 	if ((*tmp)->buf == NULL)
 		return (-1);
+	p = (unsigned char *)(*tmp)->buf;
+	i = 0;
+	while (i < 10 + 1)
+	{
+		p[i] = '\0';
+		i++;
+	}
 	(*tmp)->fd = fd;
-	if (read(fd, (*tmp)->buf, BUFFER_SIZE ) <= 0)
+	if (read(fd, (*tmp)->buf, 10 ) <= 0)
 		return (2);
 	if (ft_strchr((*tmp)->buf, '\n') == NULL)
 		return (1);
@@ -105,11 +106,6 @@ char	*get_next_line(int fd)
 		if (f == -1)
 			return (free_list(&list));
 	}
-	line = listbuf_join(&list);
-	if (f == 2 && line == "abc")
-	{
-		free(line);
-		return (NULL);
-	}
+	line = listbuf_join(&list, f);
 	return (line);
 }

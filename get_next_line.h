@@ -21,11 +21,10 @@ char		*get_next_line(int fd);
 char		*ft_strjoin(char const *s1, char const *s2);
 size_t		ft_strlen(const char *str);
 char		*ft_strchr(const char *s, int c);
-void		*ft_calloc(size_t n, size_t size);
-char		*listbuf_join(t_list **list);
-t_list		*front_list(t_list **list);
+char		*listbuf_join(t_list **list, int f);
 char		*free_list(t_list **list);
 int			create_list(t_list **tmp, int fd);
 char		*ft_substr(char const *s, const char *s1);
+void		join_free(t_list **list, char **line, char **tmp2, char *p);
 
 #endif
